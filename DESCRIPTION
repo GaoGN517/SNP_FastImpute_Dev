@@ -1,11 +1,21 @@
 Package: SNPFastImpute
 Type: Package
-Title: What the package does (short line)
-Version: 1.0
-Date: 2019-11-20
-Author: Who wrote it
+Title: Perform fast missing value imputation for
+        single nucleotide polymorphism data. 
+Version: 0.0.0.9000
+Date: 2019-11-25
+Author: 
+        person(given = "Guannan",
+               family = "Gao",
+               role = c("aut", "cre"),
+               email = "gaog@stat.tamu.edu")
 Maintainer: Who to complain to <yourfault@somewhere.net>
-Description: More about what it does (maybe more than one line)
-License: What license is it under?
-Imports: Rcpp (>= 1.0.2)
+Description: The package performs single nucleotide polymorphism (SNP) 
+        missing value imputation for their next generation gene 
+        sequencing data without a reference genome. The tool should 
+        be able to predict the missing SNP value based on a certain 
+        number of SNPs around the missing point. 
+License: Apache License (== 2.0) | file LICENSE
+Imports: Rcpp (>= 1.0.3)
 LinkingTo: Rcpp, RcppArmadillo
+RoxygenNote: 6.1.1
