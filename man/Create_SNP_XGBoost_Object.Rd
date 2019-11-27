@@ -4,7 +4,7 @@
 \alias{Create_SNP_XGBoost_Object}
 \title{Input a dataframe, generate an object for the SNP missing value imputation with xgboost.}
 \usage{
-Create_SNP_XGBoost_Object(df, size = 50)
+Create_SNP_XGBoost_Object(df, size = 10)
 }
 \arguments{
 \item{df}{A dataframe of the SNPs which we need to impute missing values}
@@ -12,27 +12,27 @@ Create_SNP_XGBoost_Object(df, size = 50)
 \item{size}{A windows size which we control for our imputation. Default value is 50.}
 }
 \value{
-a list of list of 3 contents:  
-1. XGBoost_dataset  
-1.1. xgb_train: X_train  
-1.2. xgb_test: X_test  
-1.3. test_df_label  
-1.4. snp_NA  
-1.5. pred: Empty now, to store the predicted values for each SNP  
-1.6. error: Empty now, to store the prediction errors for each SNP  
-1.7. xgb_pred  
-1.8. SNP  
-  
-2. df_NA  
-3. df_noNA
+a list of list of 2 contents:  
+
+1. NA_cols: column index with missing values  
+
+2. Multiple_SNP_Object: corresponding SNP_Objects for these SNPs
 }
 \description{
 Input a dataframe, generate an object for the SNP missing value imputation with xgboost.
 }
+\details{
+This function takes in a matrix (p columns of SNPs, n rows of samples) with NAs and 
+returns an object for our imputation function.
+}
 \examples{
 df <- readRDS("Test_df.rds")
+## This is a short matrix containing 100 SNPs with 20 samples. 
+
 xgboost_snp_obj <- Create_SNP_XGBoost_Object(df)
 
-xgboost_snp_obj <- Create_SNP_XGBoost_Object(df, size = 100)
+xgboost_snp_obj <- Create_SNP_XGBoost_Object(df, size = 200)
+
+
 
 }

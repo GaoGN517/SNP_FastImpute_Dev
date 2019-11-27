@@ -58,12 +58,12 @@ vcf2df <- function(filename) {
   n <- nrow(df_gt)
   df_split <- as.numeric(unlist(strsplit(df_gt, split = "/")))
   
-  ## Currently we treat different mutation types (values greater than 0 all as 1)
+  ## Currently we treat different mutation types (any values greater than 0) all as 1.
   df_split[df_split > 1 & !is.na(df_split)] <- 1
   n_split <- length(df_split)
   ## Sum up the two alleles at each SNP position.
   ## We silence the warning because we need to generate NA here.
-  suppressWarnings({ ## Not working now. Need to figure out a way. 
+  suppressWarnings({ ## Not working now. Need to figure out a way if want to avoid in future. 
     df_sum <- as.matrix(matrix(df_split[seq(1, n_split, by = 2)] + 
                                  df_split[seq(2, n_split, by = 2)],
                                nrow = n))
