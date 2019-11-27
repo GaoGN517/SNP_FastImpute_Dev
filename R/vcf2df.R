@@ -52,23 +52,24 @@ vcf2df <- function(filename) {
   
   ## Greb the 0/1 values for SNP information
   df_gt <- gsub(":.*","",df_gt)
-  df_gt <- gsub("\\|","/",df_gt)
-  df_gt <- gsub("/"," ",df_gt)
+  df_gt <- gsub("\\|","/",df_gt) ## some dataset use "|" to separate the two alleles. 
   
+  ## split each SNP column into two values for each alelle. 
+  n <- nrow(df_gt)
+  df_split <- as.numeric(unlist(strsplit(df_gt, split = "/")))
   
-  write.table(df_gt,"in.txt",sep=" ", quote=FALSE,row.names=FALSE,col.names=FALSE)
-  df_gt=read.table("in.txt")
-  df_gt=as.matrix(df_gt)
+  ## Currently we treat different mutation types (values greater than 0 all as 1)
+  df_split[df_split > 1 & !is.na(df_split)] <- 1
+  n_split <- length(df_split)
+  ## Sum up the two alleles at each SNP position.
+  ## We silence the warning because we need to generate NA here.
+  suppressWarnings({ ## Not working now. Need to figure out a way. 
+    df_sum <- as.matrix(matrix(df_split[seq(1, n_split, by = 2)] + 
+                                 df_split[seq(2, n_split, by = 2)],
+                               nrow = n))
+  })
   
-  class(df_gt) <- "numeric"
-  
-  table_df_gt <- apply(df_gt, 2, table)
-  levels_table_df_gt <- unlist(lapply(table_df_gt, function(x) sum(as.numeric(names(x))>1)))
-  check <- unique(ceiling(which(levels_table_df_gt>0)/2))
-  
-  n <- ncol(df_gt)
-  df_out <- df_gt[,seq(1,n,by=2)] + df_gt[,seq(2,n,by=2)]
-  colnames(df_out) <- df$V3
-  df_out <- df_out[, -check]
-  return(df_out)
+  ## Get the names for each SNP column.
+  colnames(df_sum) <- df$V3
+  return(df_sum)
 }
