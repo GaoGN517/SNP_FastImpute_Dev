@@ -1,87 +1,138 @@
-#' Input a dataframe, generate an object for the SNP missing value imputation with xgboost.
+
+
+#' For a single SNP, create an SNPFastImpute Object
 #'
-#' @param df A dataframe of the SNPs which we need to impute missing values
-#' @param size A windows size which we control for our imputation. Default value is 50. 
+#' @param df the dataframe containing NAs, p columns of SNPs, n rows of samples.
+#' @param a the column indicator of the SNP in the dataset.
+#' @param size the windows size around the SNP to use as predictor variables. 
 #'
-#' @return a list of list of 3 contents:  
-#' 1. XGBoost_dataset  
-#' 1.1. xgb_train: X_train  
-#' 1.2. xgb_test: X_test  
-#' 1.3. test_df_label  
-#' 1.4. snp_NA  
-#' 1.5. pred: Empty now, to store the predicted values for each SNP  
-#' 1.6. error: Empty now, to store the prediction errors for each SNP  
-#' 1.7. xgb_pred  
-#' 1.8. SNP  
-#'   
-#' 2. df_NA  
-#' 3. df_noNA  
+#' @return an object for the corresponding SNP.
+#' 
+#' If the SNP has missing value, then this object is a list with 6 elements:
+#' 
+#' 1. model_fit: indicator whether we need to fit a model for the SNP.
+#' 2. SNP_position: position of the SNP.
+#' 3. NA_positions: position of the missing values.
+#' 4. train_xgboost: the xgboost object to train the model. 
+#' 5. pred_data: samples that is not missing for this SNP.
+#' 6. pred_label: an empty vector to store the future predicted labels. 
+#' 7. error: an empty number to store the future prediction error of the model. 
 #' 
 #' @export
 #'
 #' @examples
 #' df <- readRDS("Test_df.rds")
+#' single_SNP_Obj <- Create_Single_SNP_Object(df, 1, 10)
+#' ## return a list of SNP related information for model building.
+#' 
+#' Create_Single_SNP_Object(df, 50, 200)
+#' ## Error message. 
+#' Stop as the size of the windows are larger than the number of SNPs in the dataframe. 
+#' 
+#' Create_Single_SNP_Object(matrix(NA, 10, 5), 1, 1)
+#' ## Should print a warning message that all samples for this SNP are NA's.
+#' ## return a list containing a model_fit value equal to false. 
+#' 
+#' 
+Create_Single_SNP_Object <- function(df, a, size) {
+  ## Store the dimension of df
+  n <- nrow(df)
+  p <- ncol(df)
+  ## check whether there are enough 
+  if (size > p) stop("The size of the windows should be smaller than the number of SNPs.")
+  
+  ## Based on the size, decide the range of the predictor variables. 
+  if (a == 1)  range = c((a+1): size)
+  else if (a == p)  range = c((a-size): p)
+  else if (a <= size/2) range = c(1:(a-1), (a+1): size)
+  else if ((a + size/2) >= p)  range = c((a-(size - (p-a))):(a-1), (a+1): p)
+  else range = c((a-size/2):(a-1), (a+1): (a + size/2))
+  
+  ## For this SNP, get which samples has missing value, which does not. 
+  NA_sample <- which(is.na(df[, a]))
+  NA_length <- length(NA_sample)
+  
+  if (NA_length == n) {
+    warning(paste0("All samples for the No.", a, 
+                 " SNP are NA's, we cannot build a model to predict the genotype for this SNP."))
+    return(list(model_fit = F))
+  }
+  else {
+    ## Dataset to train the model
+    train_data <- df[!NA_sample, range, drop = F]
+    ## Labels to train the model 
+    train_label <- df[!NA_sample, a]
+    
+    train_xgboost <- xgboost::xgb.DMatrix(data = train_data, label = train_label)
+    
+    ## Dataset to do prediction
+    pred_data <- df[NA_sample, range, drop = F]
+    
+    ## Create an empty vector to store the predicted labels
+    pred_label <- rep(NA, NA_length)
+    ## return a list of information:
+    return(list(model_fit = T, 
+                SNP_position = a, 
+                NA_positions = NA_sample,
+                train_xgboost = train_xgboost, 
+                pred_data = pred_data, 
+                pred_label = pred_label,
+                error = c(NA)))
+  }
+}
+
+
+
+
+#' Input a dataframe, generate an object for the SNP missing value imputation with xgboost.
+#'
+#' @param df A dataframe of the SNPs which we need to impute missing values
+#' @param size A windows size which we control for our imputation. Default value is 50.
+#' 
+#' @details 
+#' This function takes in a matrix (p columns of SNPs, n rows of samples) with NAs and 
+#' returns an object for our imputation function.  
+#'
+#' @return a list of list of 2 contents:  
+#' 
+#' 1. NA_cols: column index with missing values  
+#' 
+#' 2. Multiple_SNP_Object: corresponding SNP_Objects for these SNPs
+#' 
+#' @export
+#'
+#' @examples
+#' df <- readRDS("Test_df.rds")
+#' ## This is a short matrix containing 100 SNPs with 20 samples. 
+#' 
 #' xgboost_snp_obj <- Create_SNP_XGBoost_Object(df)
 #' 
-#' xgboost_snp_obj <- Create_SNP_XGBoost_Object(df, size = 100)
+#' xgboost_snp_obj <- Create_SNP_XGBoost_Object(df, size = 200)
 #' 
-Create_SNP_XGBoost_Object <- function(df, size = 50) {
+#' 
+#' 
+Create_SNP_XGBoost_Object <- function(df, size = 10) {
   ## To save time, we only impute SNP columns with NAs in the dataset.
-  NA_cols <- which(apply(df, 2, function(x) sum(is.na(x))> 0))
-  df_sub <- df[,NA_cols]
-  df_rest <- df[, -NA_cols]
-  N <- ncol(df_sub)
+  ## Store the dimension of df
+  n <- nrow(df)
+  p <- ncol(df)
+  ## check whether there are enough 
+  if (size > p) stop("The size of the windows should be smaller than the number of SNPs.")
   
-  #df_noNA_sub <- df_noNA[, NA_cols]
-  set.seed(101)
-  XGBoost_dataset <- list()
-  for (i in 1:N) {
-    XGBoost_dataset[[i]] <- list()
-    snp_NA <- which(is.na(df_sub[,i]))
-    snp_notNA <- which(!is.na(df_sub[,i]))
-    
-    samp <- sample(length(snp_notNA), size = length(snp_notNA)*0.2)
-    train <- snp_notNA[-samp]
-    test <- snp_notNA[samp]
-    if (sum(snp_NA) != 0) { ## double check that this column has NAs to impute
-      ## Create train and test data
-      if (i == 1)  range = c((i+1): size)
-      else if (i == N)  range = c((i-size): N)
-      else if (i <= size/2) range = c(1:(i-1), (i+1): size)
-      else if ((i + size/2) >= N)  range = c((i-size):(i-1), (i+1): N)
-      else range = c((i-size/2):(i-1), (i+1): (i + size/2))
-      
-      train_df <- as.matrix(df_sub[train, range])
-      test_df <- as.matrix(df_sub[test, range])
-      pred_df <- as.matrix(df_sub[snp_NA, range])
-      #pred_df <- as.matrix(df_sub[, range])
-      
-      if(ncol(test_df)==1) test_df <- t(test_df)
-      if(ncol(pred_df)==1) pred_df <- t(pred_df)
-      
-      ## Create labels
-      train_df_label <- as.numeric(df_sub[train, i])
-      test_df_label <- as.numeric(df_sub[test, i])
-      pred_df_label <- as.numeric(df_sub[snp_NA, i]) # change from df_noNA_sub to df_sub
-      
-      ## Prepare matrices
-      XGBoost_dataset[[i]][[1]] <- xgboost::xgb.DMatrix(data = train_df, label = train_df_label)
-      XGBoost_dataset[[i]][[2]] <- xgboost::xgb.DMatrix(data = test_df, label = test_df_label)
-      XGBoost_dataset[[i]][[3]] <- test_df_label
-      XGBoost_dataset[[i]][[4]] <- snp_NA
-      XGBoost_dataset[[i]][[5]] <- list()
-      XGBoost_dataset[[i]][[6]] <- list()
-      XGBoost_dataset[[i]][[7]] <- xgboost::xgb.DMatrix(data = pred_df, label = pred_df_label)
-      XGBoost_dataset[[i]][[8]] <- colnames(df_sub)[i]
-      
-      names(XGBoost_dataset[[i]]) <- c("xgb_train", "xgb_test", "test_df_label", "snp_NA","pred","error", "xgb_pred","SNP")
+  NA_cols <- which(apply(df, 2, function(x) sum(is.na(x))> 0))
+  n_NA_cols <- length(NA_cols)
+  ## Check whether there are missing values in the dataset.
+  if (n_NA_cols == 0) {
+    print("There is no missing value in the data set.")
+  }
+  else {
+    ## Create an object to store the SNP objects for all SNPs (columns) with missing values.
+    Multiple_SNP_Object <- list()
+    for(i in 1:n_NA_cols) {
+      Multiple_SNP_Object[[i]] <- Create_Single_SNP_Object(df = df, a = i, size = size)
     }
   }
-  names(XGBoost_dataset) <- colnames(df_sub)
-  out <- list()
-  out[[1]] <- XGBoost_dataset
-  out[[2]] <- df_sub
-  out[[3]] <- df_rest
-  names(out) <- c("XGBoost_dataset","df_NA","df_noNA")
-  return(out)
+  ## Return the column index with missing values, and the corresponding SNP_Objects for these SNPs.
+  return(list(NA_cols = NA_cols, Multiple_SNP_Object = Multiple_SNP_Object))
 }
+

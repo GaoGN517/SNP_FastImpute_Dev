@@ -17,7 +17,6 @@ Description: The package performs single nucleotide polymorphism (SNP)
         number of SNPs around the missing point. 
 License: Apache License (== 2.0) | file LICENSE
 Imports: Rcpp (>= 1.0.3),
-         vcfR,
          xgboost,
          dplyr
 LinkingTo: Rcpp, RcppArmadillo
