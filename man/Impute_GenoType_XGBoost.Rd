@@ -32,7 +32,8 @@ and use the non-missing samples for this SNP position as the training dataset.
 df <- readRDS("Test_df.rds")
 params <- list(nrounds = 100, booster = "gbtree", objective = "multi:softprob", num_class = 3, eval_metric = "mlogloss")
 predict_df <- Impute_GenoType_XGBoost(df)
-
+## May take several seconds to finish.
+## Should return a dataset where the missing values are filled by predicted values.  
 
 }
 \references{
