@@ -4,25 +4,18 @@
 \alias{Impute_GenoType_XGBoost}
 \title{Impute missing SNPs for the input dataset.}
 \usage{
-Impute_GenoType_XGBoost(
-  df,
-  df_test = NULL,
-  size = 10,
-  nrounds = 100,
-  booster = "gbtree",
-  objective = "multi:softprob",
-  num_class = 3,
-  eval_metric = "mlogloss"
-)
+Impute_GenoType_XGBoost(df, size = 10, params, df_test = NULL)
 }
 \arguments{
-\item{nrounds}{number of rounds in xgboost model training.}
+\item{df}{The original dataset including the missing SNPs to be imputed.}
 
-\item{num_class}{How many classes to be predicted (in this case, equal to 3).}
+\item{size}{The windows size to use as the training dataset for each SNP, default: 10.}
 
-\item{eval_metric}{}
+\item{params}{A list of parameters for the xgboost model building. 
+Default: nrounds = 100, booster = "gbtree", objective = "multi:softprob", 
+num_class = 3, eval_metric = "mlogloss".}
 
-\item{XGBoost_dataset}{The XGBoost data type dataset including the missing SNPs}
+\item{df_test}{The dataset for testing model by calculating the prediction error. Default: NULL.}
 }
 \value{
 The predicted missing genotypes.
@@ -37,14 +30,9 @@ and use the non-missing samples for this SNP position as the training dataset.
 }
 \examples{
 df <- readRDS("Test_df.rds")
+params <- list(nrounds = 100, booster = "gbtree", objective = "multi:softprob", num_class = 3, eval_metric = "mlogloss")
 predict_df <- Impute_GenoType_XGBoost(df)
 
-size = 10
-nrounds = 100
-num_class = 3
-booster = "gbtree"
-objective = "multi:softprob"
-eval_metric = "mlogloss"
 
 }
 \references{

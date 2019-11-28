@@ -1,11 +1,12 @@
 #' Impute missing SNPs for the input dataset. 
 #'
-#' @param XGBoost_dataset The XGBoost data type dataset including the missing SNPs
-#' @param nrounds number of rounds in xgboost model training. 
-#' @param booster
-#' @param objective
-#' @param num_class How many classes to be predicted (in this case, equal to 3).
-#' @param eval_metric
+#' @param df The original dataset including the missing SNPs to be imputed.    
+#' @param size The windows size to use as the training dataset for each SNP, default: 10.   
+#' @param params A list of parameters for the xgboost model building. 
+#' Default: nrounds = 100, booster = "gbtree", objective = "multi:softprob", 
+#' num_class = 3, eval_metric = "mlogloss".   
+#' @param df_test The dataset for testing model by calculating the prediction error. Default: NULL.
+#'    
 #' 
 #' @details 
 #' In our model, we try to use the types of SNPs around each missing SNP to predict the missing value. 
@@ -17,14 +18,10 @@
 #'
 #' @examples
 #' df <- readRDS("Test_df.rds")
+#' params <- list(nrounds = 100, booster = "gbtree", objective = "multi:softprob", num_class = 3, eval_metric = "mlogloss")
 #' predict_df <- Impute_GenoType_XGBoost(df)
-#' 
-#' size = 10
-#' nrounds = 100
-#' num_class = 3
-#' booster = "gbtree"
-#' objective = "multi:softprob"
-#' eval_metric = "mlogloss"
+#' ## May take several seconds to finish.
+#' ## Should return a dataset where the missing values are filled by predicted values.  
 #' 
 #' @references 
 #' 
@@ -35,7 +32,7 @@
 #' Tianqi Chen and Carlos Guestrin, "XGBoost: A Scalable Tree Boosting System",
 #' 22nd SIGKDD Conference on Knowledge Discovery and Data Mining, 2016, \url{https://arxiv.org/abs/1603.02754}
 #' 
-Impute_GenoType_XGBoost <- function(df, df_test = NULL, size = 10, nrounds = 100, booster = "gbtree", objective = "multi:softprob", num_class = 3, eval_metric = "mlogloss"){
+Impute_GenoType_XGBoost <- function(df, size = 10, params, df_test = NULL){
   ## To save time, we only impute SNP columns with NAs in the dataset.
   ## Get the dimension of df
   n <- nrow(df)
@@ -43,8 +40,7 @@ Impute_GenoType_XGBoost <- function(df, df_test = NULL, size = 10, nrounds = 100
   ## check whether there are enough 
   if (size > p) stop("The size of the windows should be smaller than the number of SNPs.")
   ## Read the parameters for model building.
-  params <- list(booster = booster, objective = objective, num_class = num_class, eval_metric = eval_metric)
-  
+
   NA_cols <- which(apply(df, 2, function(x) sum(is.na(x))> 0))
   n_NA_cols <- length(NA_cols)
   ## Check whether there are missing values in the dataset.
@@ -70,70 +66,4 @@ Impute_GenoType_XGBoost <- function(df, df_test = NULL, size = 10, nrounds = 100
   ## Return the column index with missing values, and the corresponding SNP_Objects for these SNPs.
   #return(list(df_fill = df_fill, error = error_vec))
   return(df_fill)
-}
-
-
-Impute_GenoType_XGBoost1 <- function(df, size = 10, nrounds = 100, booster = "gbtree", objective = "multi:softprob", num_class = 3, eval_metric = "mlogloss") {
-  ## Get how many SNPs includes missing values needing to be imputed. 
-  XGBoost_dataset <- Create_SNP_XGBoost_Object(df, size = size)
-  test_length = length(XGBoost_dataset$NA_cols)
-  
-  ## insert the parameters for 
-  params <- list(booster = booster, objective = objective, num_class = num_class, eval_metric = eval_metric)
-  
-  multi_SNP_Obj <- XGBoost_dataset$Multiple_SNP_Object
-  ## Model and prediction
-  for (i in 1: test_length) {
-    single_SNP_Obj <- multi_SNP_Obj[[i]]
-    if(single_SNP_Obj$model_fit == T) {
-      train_data <- single_SNP_Obj$train_xgboost
-      xgb_model <- xgboost::xgb.train(data = train_data, params = params, num_class = 3)
-      
-    }
-    
-  }
-  XGBoost_dataset_sub <- lapply(XGBoost_dataset[[1]][c(1:test_length)], function(x) {
-    xgb_model <- xgboost::xgb.train(params = params, data =x[[1]], nrounds = 100)
-    # Predict for validation set
-    xgb_val_tests <- predict(xgb_model, newdata = x[[2]])
-    xgb_val_out <- matrix(xgb_val_tests, nrow = 3, ncol = length(xgb_val_tests) / 3) %>% 
-      t() %>%
-      data.frame() %>%
-      mutate(max = max.col(., ties.method = "last"), label = x[[3]]) 
-    
-    x[[5]] <- xgb_val_out$max
-    
-    # Confustion Matrix
-    xgb_val_conf <- table(true = x[[3]], pred = x[[5]])
-    x[[6]] <- classification_error(xgb_val_conf)
-    #df_sub[x[[4]], i] <- x[[5]]-1
-    
-    if (x[[6]] > 0) {
-      cat("XGB Validation Classification Error Rate of", x[[8]], " is: ", x[[6]], "\n")
-      cat("Test should be: ",x[[3]],"\n")
-      cat("But turns out to be: ", x[[5]]-1,"\n")
-    }
-    else {
-      cat("Passed the test. \n")
-      cat("XGB Validation Classification Error Rate of", x[[8]], " is: ", x[[6]], "\n")
-      cat("Test should be: ",x[[3]],"\n")
-      cat("But turns out to be: ", x[[5]]-1,"\n")
-      xgb_preds <- predict(xgb_model, newdata = x[[7]])
-      xgb_preds_out <- matrix(xgb_preds, nrow = 3, ncol = length(xgb_preds) / 3) %>% 
-        t() %>%
-        data.frame() %>%
-        mutate(max = max.col(., ties.method = "last")) 
-      df_sub[x[[4]], x[[8]]] <- xgb_preds_out$max-1
-      cat("Prediction is ",df_sub[x[[4]], x[[8]]],"\n")
-    }
-    cat("\n")
-    return(x)
-  })
-  
-  ## Show the results: 
-  bind <- cbind(df_sub, XGBoost_dataset[[3]])
-  mean_error <- mean(as.numeric(unlist(lapply(XGBoost_dataset_sub, function(x) x[[6]]))))
-  cat(paste0("The mean classification error is ", mean_error, ".\n"))
-  
-  return(df_sub)
 }
