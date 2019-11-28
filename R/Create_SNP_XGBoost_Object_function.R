@@ -59,25 +59,28 @@ Create_Single_SNP_Object <- function(df, a, size) {
   }
   else {
     ## Dataset to train the model
-    train_data <- df[!NA_sample, range, drop = F]
+    train_data <- df[-NA_sample, range, drop = F]
     ## Labels to train the model 
-    train_label <- df[!NA_sample, a]
+    train_label <- as.numeric(df[-NA_sample, a])
     
-    train_xgboost <- xgboost::xgb.DMatrix(data = train_data, label = train_label)
+    #train_xgboost <- xgboost::xgb.DMatrix(data = train_data, label = train_label)
     
     ## Dataset to do prediction
     pred_data <- df[NA_sample, range, drop = F]
+    pred_label <- as.numeric(df[NA_sample, i])
+    #pred_xgboost <- xgboost::xgb.DMatrix(data = pred_data, label = pred_label)
     
     ## Create an empty vector to store the predicted labels
-    pred_label <- rep(NA, NA_length)
+    #pred_label <- rep(NA, NA_length)
     ## return a list of information:
     return(list(model_fit = T, 
                 SNP_position = a, 
                 NA_positions = NA_sample,
-                train_xgboost = train_xgboost, 
+                train_data = train_data, 
+                train_label = train_label,
                 pred_data = pred_data, 
-                pred_label = pred_label,
-                error = c(NA)))
+                pred_label = pred_label))#,
+                #error = c(NA)))
   }
 }
 
@@ -113,7 +116,7 @@ Create_Single_SNP_Object <- function(df, a, size) {
 #' 
 Create_SNP_XGBoost_Object <- function(df, size = 10) {
   ## To save time, we only impute SNP columns with NAs in the dataset.
-  ## Store the dimension of df
+  ## Get the dimension of df
   n <- nrow(df)
   p <- ncol(df)
   ## check whether there are enough 

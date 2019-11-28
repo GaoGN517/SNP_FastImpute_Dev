@@ -4,9 +4,24 @@
 \alias{Impute_GenoType_XGBoost}
 \title{Impute missing SNPs for the input dataset.}
 \usage{
-Impute_GenoType_XGBoost(XGBoost_dataset)
+Impute_GenoType_XGBoost(
+  df,
+  df_test = NULL,
+  size = 10,
+  nrounds = 100,
+  booster = "gbtree",
+  objective = "multi:softprob",
+  num_class = 3,
+  eval_metric = "mlogloss"
+)
 }
 \arguments{
+\item{nrounds}{number of rounds in xgboost model training.}
+
+\item{num_class}{How many classes to be predicted (in this case, equal to 3).}
+
+\item{eval_metric}{}
+
 \item{XGBoost_dataset}{The XGBoost data type dataset including the missing SNPs}
 }
 \value{
@@ -21,8 +36,15 @@ For each missing value, we need to use the size n of SNPs around it as predictor
 and use the non-missing samples for this SNP position as the training dataset.
 }
 \examples{
-SNP_XGBoost_Obj <- readRDS("Test_xgboost_obj.rds")
-predict_df <- Impute_GenoType_XGBoost(SNP_XGBoost_Obj)
+df <- readRDS("Test_df.rds")
+predict_df <- Impute_GenoType_XGBoost(df)
+
+size = 10
+nrounds = 100
+num_class = 3
+booster = "gbtree"
+objective = "multi:softprob"
+eval_metric = "mlogloss"
 
 }
 \references{
