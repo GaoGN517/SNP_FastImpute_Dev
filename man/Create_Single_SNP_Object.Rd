@@ -21,13 +21,18 @@ If the SNP has missing value, then this object is a list with 6 elements:
 1. model_fit: indicator whether we need to fit a model for the SNP.
 2. SNP_position: position of the SNP.
 3. NA_positions: position of the missing values.
-4. train_xgboost: the xgboost object to train the model. 
-5. pred_data: samples that is not missing for this SNP.
-6. pred_label: an empty vector to store the future predicted labels. 
-7. error: an empty number to store the future prediction error of the model.
+4. train_data: samples that are not missing for this SNP. 
+5. train_lable: the values of the non-missing samples for this SNP
+6. pred_data: samples that are missing for this SNP.
+7. pred_label: an empty vector to store the future predicted labels.
 }
 \description{
 For a single SNP, create an SNPFastImpute Object
+}
+\details{
+Basically the function do two different jobs. 
+Using the known values for each SNP to predict the missing values for that 
+   SNP.
 }
 \examples{
 df <- readRDS("Test_df.rds")
