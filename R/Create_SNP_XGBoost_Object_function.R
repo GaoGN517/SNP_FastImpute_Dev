@@ -28,13 +28,13 @@
 #' @export
 #'
 #' @examples
-#' df <- readRDS("Test_df.rds")
-#' single_SNP_Obj <- Create_Single_SNP_Object(df, 1, 10)
+#' data("Test_df")
+#' single_SNP_Obj <- Create_Single_SNP_Object(Test_df, 1, 10)
 #' ## return a list of SNP related information for model building.
 #' 
-#' Create_Single_SNP_Object(df, 50, 200)
+#' Create_Single_SNP_Object(Test_df, 50, 200)
 #' ## Error message. 
-#' Stop as the size of the windows are larger than the number of SNPs in the dataframe. 
+#' ## Stop as the size of the windows are larger than the number of SNPs in the dataframe. 
 #' 
 #' Create_Single_SNP_Object(matrix(NA, 10, 5), 1, 1)
 #' ## Should print a warning message that all samples for this SNP are NA's.
@@ -73,7 +73,7 @@ Create_Single_SNP_Object <- function(df, a, size) {
     
     ## Dataset to do prediction
     pred_data <- df[NA_sample, range, drop = F]
-    pred_label <- as.numeric(df[NA_sample, i])
+    pred_label <- as.numeric(df[NA_sample, a])
     
     ## return a list of information:
     return(list(model_fit = T, 
