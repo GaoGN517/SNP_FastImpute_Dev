@@ -5,6 +5,12 @@
 #' @param df the dataframe containing NAs, p columns of SNPs, n rows of samples.
 #' @param a the column indicator of the SNP in the dataset.
 #' @param size the windows size around the SNP to use as predictor variables. 
+#' 
+#' 
+#' @details Basically the function do two different jobs. 
+#' Using the known values for each SNP to predict the missing values for that 
+#'    SNP. 
+#'
 #'
 #' @return an object for the corresponding SNP.
 #' 
@@ -13,10 +19,11 @@
 #' 1. model_fit: indicator whether we need to fit a model for the SNP.
 #' 2. SNP_position: position of the SNP.
 #' 3. NA_positions: position of the missing values.
-#' 4. train_xgboost: the xgboost object to train the model. 
-#' 5. pred_data: samples that is not missing for this SNP.
-#' 6. pred_label: an empty vector to store the future predicted labels. 
-#' 7. error: an empty number to store the future prediction error of the model. 
+#' 4. train_data: samples that are not missing for this SNP. 
+#' 5. train_lable: the values of the non-missing samples for this SNP
+#' 6. pred_data: samples that are missing for this SNP.
+#' 7. pred_label: an empty vector to store the future predicted labels. 
+#' 
 #' 
 #' @export
 #'
@@ -51,27 +58,23 @@ Create_Single_SNP_Object <- function(df, a, size) {
   ## For this SNP, get which samples has missing value, which does not. 
   NA_sample <- which(is.na(df[, a]))
   NA_length <- length(NA_sample)
-  
+
   if (NA_length == n) {
     warning(paste0("All samples for the No.", a, 
                  " SNP are NA's, we cannot build a model to predict the genotype for this SNP."))
     return(list(model_fit = F))
   }
   else {
+    
     ## Dataset to train the model
     train_data <- df[-NA_sample, range, drop = F]
     ## Labels to train the model 
     train_label <- as.numeric(df[-NA_sample, a])
     
-    #train_xgboost <- xgboost::xgb.DMatrix(data = train_data, label = train_label)
-    
     ## Dataset to do prediction
     pred_data <- df[NA_sample, range, drop = F]
     pred_label <- as.numeric(df[NA_sample, i])
-    #pred_xgboost <- xgboost::xgb.DMatrix(data = pred_data, label = pred_label)
     
-    ## Create an empty vector to store the predicted labels
-    #pred_label <- rep(NA, NA_length)
     ## return a list of information:
     return(list(model_fit = T, 
                 SNP_position = a, 
@@ -79,8 +82,7 @@ Create_Single_SNP_Object <- function(df, a, size) {
                 train_data = train_data, 
                 train_label = train_label,
                 pred_data = pred_data, 
-                pred_label = pred_label))#,
-                #error = c(NA)))
+                pred_label = pred_label))
   }
 }
 
