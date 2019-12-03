@@ -4,20 +4,18 @@
 \alias{Impute_GenoType_XGBoost}
 \title{Impute missing SNPs for the input dataset.}
 \usage{
-Impute_GenoType_XGBoost(df, size = 10, num_class = 3, nrounds = 100)
+Impute_GenoType_XGBoost(df, size = 10, params, df_test = NULL)
 }
 \arguments{
 \item{df}{The original dataset including the missing SNPs to be imputed.}
 
 \item{size}{The windows size to use as the training dataset for each SNP, default: 10.}
 
-\item{num_class}{Number of classes of response variable (types of SNPs), default: 3.
-
-params A list of parameters for the xgboost model building. 
+\item{params}{A list of parameters for the xgboost model building. 
 Default: nrounds = 100, booster = "gbtree", objective = "multi:softprob", 
 num_class = 3, eval_metric = "mlogloss".}
 
-\item{nrounds}{Number of fitting rounds, default: 100.}
+\item{df_test}{The dataset for testing model by calculating the prediction error. Default: NULL.}
 }
 \value{
 The predicted missing genotypes.
@@ -33,7 +31,7 @@ and use the non-missing samples for this SNP position as the training dataset.
 \examples{
 df <- readRDS("Test_df.rds")
 params <- list(nrounds = 100, booster = "gbtree", objective = "multi:softprob", num_class = 3, eval_metric = "mlogloss")
-predict_df <- Impute_GenoType_XGBoost(df, size = 10, nrounds = 50)
+predict_df <- Impute_GenoType_XGBoost(df)
 ## May take several seconds to finish.
 ## Should return a dataset where the missing values are filled by predicted values.  
 
