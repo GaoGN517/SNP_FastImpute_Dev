@@ -34,7 +34,7 @@
 #' @export
 #'
 #' @examples
-#' filename <- "Test.vcf"
+#' filename <- "data/Test.vcf"
 #' output_df <- vcf2df(filename)
 #' ## This dataset has 112 samples and 338 SNP positions.
 #' ## The original file has 121 columns and 338 rows.
