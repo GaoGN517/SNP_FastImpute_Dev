@@ -2,7 +2,7 @@ Package: SNPFastImpute
 Type: Package
 Title: Perform fast missing value imputation for
         single nucleotide polymorphism data. 
-Version: 0.0.1.9000
+Version: 0.0.2.9000
 Date: 2019-11-25
 Author: 
         person(given = "Guannan",
