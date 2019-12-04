@@ -22,6 +22,15 @@ This is a basic example which shows you how to solve a common problem:
 ``` r
 library(SNPFastImpute)
 
-## 
+## Read a vcf file as a matrix
+## filename <- "data/Test.vcf" ## your file path
+## output_df <- vcf2df(filename) ## convert to matrix
+
+
+
+
+
+
+
 ```
 

@@ -61,8 +61,6 @@ Impute_GenoType_XGBoost <- function(df, size = 10, num_class = 3, nrounds = 100)
     df_fill[single_SNP_Obj$NA_positions, single_SNP_Obj$SNP_position] <- single_SNP_Obj$pred_label
   }
   
-  ## Calculate the classification error
-  error <- 
   ## Return the column index with missing values, and the corresponding SNP_Objects for these SNPs.
   #return(list(df_fill = df_fill, error = error_vec))
   return(df_fill)
