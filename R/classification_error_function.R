@@ -20,13 +20,10 @@
 #' classification_error(SNP_orig_sub, df_fill, NA_positions)
 #' 
 classification_error <- function(df1, df2, NA_positions) {
-  ##################################################################################
-  ## input: the confusion matrix calculated from the test dataset
-  ## output: the classification error rate of the prediction using our trained model
-  ## on the test dataset. 
-  ##################################################################################
+  ## Calculate the confusion matrix
   confusion_matrix <- as.matrix(table(df1[NA_positions], df2[NA_positions]))
   
+  ## Calculate the classification error. 
   error <- 1 - sum(diag(confusion_matrix)) / sum(confusion_matrix)
   
   return (error)
