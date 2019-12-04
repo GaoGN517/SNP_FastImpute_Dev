@@ -18,7 +18,10 @@ Description: The package performs single nucleotide polymorphism (SNP)
 License: Apache License (== 2.0) | file LICENSE
 Imports: Rcpp (>= 1.0.3),
          xgboost,
-         dplyr
+         dplyr,
+         foreach,
+         doParallel,
+         doRNG
 LinkingTo: Rcpp, RcppArmadillo
 RoxygenNote: 7.0.0
 Suggests: 
