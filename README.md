@@ -65,7 +65,7 @@ df_fill005 <- Impute_GenoType_XGBoost(SNP_NA_df005$SNP_NA_df)
 NA_positions02 <- SNP_NA_df02$NP_generate_positions
 NA_positions005 <- SNP_NA_df005$NP_generate_positions
 
-classification_error(SNP_orig_sub, df_fill02, NA_positions02)
-classification_error(SNP_orig_sub, df_fill005, NA_positions005)
+classification_error(SNP_orig_sub, df_fill02, NA_positions02) ## 0.071
+classification_error(SNP_orig_sub, df_fill005, NA_positions005) ## 0.061
 ```
 
