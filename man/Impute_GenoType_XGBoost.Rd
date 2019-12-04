@@ -32,8 +32,7 @@ and use the non-missing samples for this SNP position as the training dataset.
 }
 \examples{
 data("Test_df")
-df <- Test_df
-predict_df <- Impute_GenoType_XGBoost(df, size = 10)
+predict_df <- Impute_GenoType_XGBoost(Test_df, size = 10)
 ## May take several seconds to finish.
 ## Should return a dataset where the missing values are filled by predicted values.  
 

@@ -22,12 +22,12 @@ a list of variables:
 Function to introduce additional NAs for prediction error calculation.
 }
 \examples{
-SNP_df <- readRDS("data/SNP_orig_sub.rds")
+data("SNP_orig_sub")
 ## original NA ratio is 0.018
-SNP_NA_df <- NA_Generator(SNP_df, 0.2)
+SNP_NA_df02 <- NA_Generator(SNP_orig_sub, 0.2)
 ## Introduced another 18\% of NAs. 
-# saveRDS(SNP_NA_df, file = "data/SNP_NA_df_list.rds")
-SNP_NA_df <- NA_Generator(SNP_df, 0.01)
+
+SNP_NA_df <- NA_Generator(SNP_orig_sub, 0.01)
 ## Should report an error: alread has 1.8\% NA's, higher than the 
 ## target percentage. 
 

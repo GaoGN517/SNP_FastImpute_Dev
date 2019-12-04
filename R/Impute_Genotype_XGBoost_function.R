@@ -46,22 +46,25 @@ Impute_GenoType_XGBoost <- function(df, size = 10, num_class = 3, nrounds = 100)
   n_NA_cols <- length(NA_cols)
   ## Check whether there are missing values in the dataset.
   if (n_NA_cols == 0) {
-    print("There is no missing value in the data set.")
+    stop ("There is no missing value in the data set.")
   }
-  else {
-    ## Create an object to store the dataframe where missing SNPs are replaced by predicted SNPs.
-    df_fill <- df
-    error_vec <- rep(NA, n_NA_cols)
-    for(col in NA_cols) {
-      single_SNP_Obj <- Create_Single_SNP_Object(df = df, a = col, size = size)
-      train_xgboost <- xgboost::xgb.DMatrix(data = single_SNP_Obj$train_data, label = single_SNP_Obj$train_label)
-      pred_xgboost <- xgboost::xgb.DMatrix(data = single_SNP_Obj$pred_data, label = single_SNP_Obj$pred_label)
-      xgb_model <- xgboost::xgb.train(data = train_xgboost, num_class = num_class, nrounds = nrounds)
-      single_SNP_Obj$pred_label <- predict(xgb_model, newdata = single_SNP_Obj$pred_data)
-      df_fill[single_SNP_Obj$NA_positions, single_SNP_Obj$SNP_position] <- single_SNP_Obj$pred_label
-    }
+  
+  ## Create an object to store the dataframe where missing SNPs are replaced by predicted SNPs.
+  df_fill <- df
+  error_vec <- rep(NA, n_NA_cols)
+  for(col in NA_cols) {
+    single_SNP_Obj <- Create_Single_SNP_Object(df = df, a = col, size = size)
+    train_xgboost <- xgboost::xgb.DMatrix(data = single_SNP_Obj$train_data, label = single_SNP_Obj$train_label)
+    pred_xgboost <- xgboost::xgb.DMatrix(data = single_SNP_Obj$pred_data, label = single_SNP_Obj$pred_label)
+    xgb_model <- xgboost::xgb.train(data = train_xgboost, num_class = num_class, nrounds = nrounds)
+    single_SNP_Obj$pred_label <- predict(xgb_model, newdata = single_SNP_Obj$pred_data)
+    df_fill[single_SNP_Obj$NA_positions, single_SNP_Obj$SNP_position] <- single_SNP_Obj$pred_label
   }
+  
+  ## Calculate the classification error
+  error <- 
   ## Return the column index with missing values, and the corresponding SNP_Objects for these SNPs.
   #return(list(df_fill = df_fill, error = error_vec))
   return(df_fill)
+  
 }

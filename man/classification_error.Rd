@@ -2,25 +2,29 @@
 % Please edit documentation in R/classification_error_function.R
 \name{classification_error}
 \alias{classification_error}
-\title{Title Given a confusion matrix, return the classification error.}
+\title{Classification error calculator.}
 \usage{
-classification_error(confusion_matrix)
+classification_error(df1, df2, NA_positions)
 }
 \arguments{
-\item{confusion_matrix}{The confusion matrix for prediction summary using the model.}
+\item{df1}{The original dataset that contains only true missing values, not introduced 
+missing values.}
+
+\item{df2}{The second dataset that has all missing values filled in.}
+
+\item{NA_positions}{The positions where we introduced NA in the original dataset.}
 }
 \value{
 number of incorrectly classified individuals / total number of individuals
 }
 \description{
-Title Given a confusion matrix, return the classification error.
+Classification error calculator.
 }
 \examples{
-A <- matrix(c(12, 24, 25, 30))
-classification_error(A)
-# 0.8681319
-
-classification_error(diag(c(12, 24)))
-# 0
+data("SNP_orig_sub")
+data("SNP_NA_df02")
+df_fill <- Impute_GenoType_XGBoost(SNP_NA_df02$SNP_NA_df)
+NA_positions <- SNP_NA_df02$NP_generate_positions
+classification_error(SNP_orig_sub, df_fill, NA_positions)
 
 }
