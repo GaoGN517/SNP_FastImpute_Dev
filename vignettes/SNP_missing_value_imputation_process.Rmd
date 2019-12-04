@@ -52,7 +52,8 @@ We store these information into a numeric matrix, whose rows are the samples whi
 full_df <- vcf2df(full_vcf)
 full_df[1:4, 1:4]
 ```
-There would be a warning message for NAs, which is caused by adding missing positions of SNPs, which is what we should do. So here NAs does not mean problem.   
+There would be a warning message for NAs, which is caused by adding missing positions of SNPs, 
+which is what we should do. So here NAs does not mean problem.   
 There are `r dim(full_df)[1]` samples and `r dim(full_df)[2]` SNPs in the original dataset. 
 And the missing ratio is `r sum(is.na(full_df))/length(full_df)`.  
 
