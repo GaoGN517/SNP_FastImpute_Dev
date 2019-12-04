@@ -34,18 +34,17 @@
 #' @export
 #'
 #' @examples
-#' filename <- "data/Test.vcf"
-#' output_df <- vcf2df(filename)
+#' data(vcf_df)
+#' output_df <- vcf2df(vcf_df)
 #' ## This dataset has 112 samples and 338 SNP positions.
 #' ## The original file has 121 columns and 338 rows.
 #' 
 #' ## Output should be a dataset with 112 rows and 338 columns. 
 #' 
 
-vcf2df <- function(filename) {
+vcf2df <- function(vcf_df) {
   ## Read in the original vcf file as a dataframe.
-  df <- read.table(filename)
-  
+  df <- vcf_df
   ## Subset SNP type related information starting from the 10th column of the original dataframe.
   ## Transpose the dataframe so that SNPs are columns and samples are rows. 
   df_gt <- t(df[,10:ncol(df)]) 

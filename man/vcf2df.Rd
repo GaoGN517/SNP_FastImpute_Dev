@@ -4,7 +4,7 @@
 \alias{vcf2df}
 \title{Read a vcf file, output the corresponding dataframe.}
 \usage{
-vcf2df(filename)
+vcf2df(vcf_df)
 }
 \arguments{
 \item{filename}{The vcf file we want to read and generate the dataframe we need to 
@@ -42,8 +42,8 @@ In the output data, each unit is the corresponding SNP type:
     for this position.
 }
 \examples{
-filename <- "data/Test.vcf"
-output_df <- vcf2df(filename)
+data(vcf_df)
+output_df <- vcf2df(vcf_df)
 ## This dataset has 112 samples and 338 SNP positions.
 ## The original file has 121 columns and 338 rows.
 

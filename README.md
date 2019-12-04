@@ -24,7 +24,12 @@ library(SNPFastImpute)
 
 ## Read a vcf file as a matrix
 ## filename <- "data/Test.vcf" ## your file path
-## output_df <- vcf2df(filename) ## convert to a matrix
+## vcf_df <- read.table(filename) ## read in your vcf data 
+## Here we just load the dataset in vcf format.
+data(vcf_df)
+output_df <- vcf2df(vcf_df)
+## There would be warning message for NAs, which is caused by adding missing positions
+## of SNPs, which is what we should do. So here NAs does not mean problem. 
 
 ## Introduce some missing values into the original matrix to test the performance
 data("SNP_orig_sub")
