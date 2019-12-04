@@ -51,15 +51,37 @@ Impute_GenoType_XGBoost <- function(df, size = 10, num_class = 3, nrounds = 100)
   
   ## Create an object to store the dataframe where missing SNPs are replaced by predicted SNPs.
   df_fill <- df
-  error_vec <- rep(NA, n_NA_cols)
-  for(col in NA_cols) {
-    single_SNP_Obj <- Create_Single_SNP_Object(df = df, a = col, size = size)
+  
+  NA_len <- length(NA_cols)
+  
+  nworkers <- parallel::detectCores()
+  cl <- parallel::makeCluster(nworkers)
+  doParallel::registerDoParallel(cl)
+  
+  SNP_obj <- foreach::foreach (i = 1:NA_len, .packages="foreach") %dopar% {
+    col <- NA_cols[i]
+    
+    single_SNP_Obj <- SNPFastImpute::Create_Single_SNP_Object(df = df, a = col, size = size)
+    
     train_xgboost <- xgboost::xgb.DMatrix(data = single_SNP_Obj$train_data, label = single_SNP_Obj$train_label)
+    
     pred_xgboost <- xgboost::xgb.DMatrix(data = single_SNP_Obj$pred_data, label = single_SNP_Obj$pred_label)
+    
     xgb_model <- xgboost::xgb.train(data = train_xgboost, num_class = num_class, nrounds = nrounds)
+    
     single_SNP_Obj$pred_label <- predict(xgb_model, newdata = single_SNP_Obj$pred_data)
+    
+    #
+    
+    return(single_SNP_Obj)
+  }
+  parallel::stopCluster(cl)
+  
+  for(i in 1:NA_len){
+    single_SNP_Obj <- SNP_obj[[i]]
     df_fill[single_SNP_Obj$NA_positions, single_SNP_Obj$SNP_position] <- single_SNP_Obj$pred_label
   }
+  
   
   ## Return the column index with missing values, and the corresponding SNP_Objects for these SNPs.
   #return(list(df_fill = df_fill, error = error_vec))

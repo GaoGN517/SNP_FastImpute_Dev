@@ -59,13 +59,22 @@ Create_Single_SNP_Object(SNP_NA_df005$SNP_NA_df, 2, size = 20)
 ## values.
 
 ## We can just do the filling for the original matrix
-predict_df <- Impute_GenoType_XGBoost(SNP_orig_sub, size = 10)
-## about 30 seconds.
+system.time(
+  predict_df <- Impute_GenoType_XGBoost(SNP_orig_sub, size = 10)
+)
+## about 60 seconds for the original Impute function, after parallel, around 10 seconds.
 
 ## We can also perform the filling on the matrix which we introduced additional 
 ## missing values. And then see how our method performed on predictions. 
-df_fill02 <- Impute_GenoType_XGBoost(SNP_NA_df02$SNP_NA_df)
-df_fill005 <- Impute_GenoType_XGBoost(SNP_NA_df005$SNP_NA_df)
+system.time(
+  df_fill02 <- Impute_GenoType_XGBoost(SNP_NA_df02$SNP_NA_df)
+)
+#   user  system elapsed 
+#   0.31    0.06   63.97
+system.time(
+  df_fill005 <- Impute_GenoType_XGBoost(SNP_NA_df005$SNP_NA_df)
+)
+
 
 NA_positions02 <- SNP_NA_df02$NP_generate_positions
 NA_positions005 <- SNP_NA_df005$NP_generate_positions
