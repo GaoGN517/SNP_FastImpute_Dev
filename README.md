@@ -11,9 +11,9 @@ The goal of SNPFastImpute is to impute missing values in SNP data files.
 You can install the development version of SNPFastImpute from github using devtools:
 
 ``` r
-library(devtools)
-devtools::install_github("GaoGN517/689_SNP_FastImpute.git")
+devtools::install_github("GaoGN517/689_SNP_FastImpute")
 ```
+(currently private.)
 
 ## Basic Example
 
