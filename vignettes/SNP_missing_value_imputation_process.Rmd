@@ -22,7 +22,9 @@ library(tidyverse)
 ## 1. Data preparation.
 ### 1.1. From vcf (Variant Call Format) to matrix.
 Load the vcf dataset.   
-Some vcf file might contain some heading information. If that is the case, just read (using the read.table function) starting from the first row below those headings. (More information about the vcf format check https://en.wikipedia.org/wiki/Variant_Call_Format.) 
+Some vcf file might contain some heading information. If that is the case, just read (using the
+read.table function) starting from the first row below those headings. (More information about the 
+vcf format check https://en.wikipedia.org/wiki/Variant_Call_Format.) 
 Here we just load the previously read full_vcf file. 
 ```{r vcf, echo=T, tidy=TRUE, tidy.opts=list(width.cutoff=40)}
 data("full_vcf")
@@ -33,16 +35,26 @@ The original vcf file contains 52 rows (starting from column 10 are samples) and
 
 Information we need are in column 3 (label of SNPs) and columns starting from 19 (each sample).  
 
-And only the first part of the sample columns before the first ":" are useful in our analyses. The two integers separated by "/" are the indicator of genotype of two alleles of genes at the same SNP position. (0: wild type; 1: the most common mutation type, 2: the second most common mutation type, etc.) We currently only care whether it is wild type now. So we change any number greater than 1 to 1. So we only has two type of values for each allele (0 means wild type, 1 means mutation). This can be modified if we need to take care of different mutation types in the future. 
+And only the first part of the sample columns before the first ":" are useful in our analyses. 
+The two integers separated by "/" are the indicator of genotype of two alleles of genes at the same
+SNP position. (0: wild type; 1: the most common mutation type, 2: the second most common mutation type, etc.) 
+We currently only care whether it is wild type now. So we change any number greater than 1 to 1. 
 
-Instead of having two numbers for each SNP, we add the numbers for two alleles together. So finally, we have 3 values for each SNP position (0: both alleles are wild type, 1: one of the alleles is mutated, 2: both alleles are mutated). We store these information into a numeric matrix, whose rows are the samples while columns are the SNP positions. 
+So we only has two type of values for each allele (0 means wild type, 1 means mutation). 
+This can be modified if we need to take care of different mutation types in the future. 
+
+Instead of having two numbers for each SNP, we add the numbers for two alleles together. 
+So finally, we have 3 values for each SNP position 
+(0: both alleles are wild type, 1: one of the alleles is mutated, 2: both alleles are mutated). 
+We store these information into a numeric matrix, whose rows are the samples while columns are the SNP positions. 
 
 ```{r vcf2df, message=FALSE}
 full_df <- vcf2df(full_vcf)
 full_df[1:4, 1:4]
 ```
 There would be a warning message for NAs, which is caused by adding missing positions of SNPs, which is what we should do. So here NAs does not mean problem.   
-There are `r dim(full_df)[1]` samples and `r dim(full_df)[2]` SNPs in the original dataset. And the missing ratio is `r sum(is.na(full_df))/length(full_df)`.  
+There are `r dim(full_df)[1]` samples and `r dim(full_df)[2]` SNPs in the original dataset. 
+And the missing ratio is `r sum(is.na(full_df))/length(full_df)`.  
 
 This data matrix is too large, we will only use a subset (first 500 SNPs) of it.
 ```{r subset}
@@ -58,13 +70,25 @@ There are several variations in our prediction:
 
 We want to know how these affects the following properties:    
 - (1) classification error: ratio that are not correctly classified.  
-- (2) running time: e.g., if enlarging the window size only slightly decreases the classification error but cost unreasonably long time, then we might not choose that size.   
+- (2) running time: e.g., if enlarging the window size only slightly decreases the classification
+error but cost unreasonably long time, then we might not choose that size.   
 
-To calculate these error, the best way is to find an SNP matrix which contains no missing SNPs (which I could not find, all my current SNP files contains a lot of missings). 
+To calculate these error, the best way is to find an SNP matrix which contains no missing SNPs 
+(which I could not find, all my current SNP files contains a lot of missings). 
 
-The second best way is to simulate an SNP matrix which contains no missing value. This is not an easy task because we need to make sure the correlations between the SNPs are representing the true situation. And the appearances of wildetype alleles are representing the true situation. I am planning to do this in the next step, but currently I do not have a very good way to simulate. 
+The second best way is to simulate an SNP matrix which contains no missing value. 
+This is not an easy task because we need to make sure the correlations between the SNPs are
+representing the true situation. 
+And the appearances of wildetype alleles are representing the true situation. 
+I am planning to do this in the next step, but currently I do not have a very good way to simulate. 
 
-So what I am doing now is that I introduced some new missing values into the original matrix so that the total missing rate reaches some value. And I recorded these introduced positions. Then I perform a imputation for all missing values, get the filled data. We only use the recorded introduced NA positions in the original data and filled data to calculate the classification error. This way, although not as good as the first two ways, may catch how the variable factors affects the classification error and running time. 
+So what I am doing now is that I introduced some new missing values into the original matrix so that
+the total missing rate reaches some value. And I recorded these introduced positions. 
+Then I perform a imputation for all missing values, get the filled data. 
+We only use the recorded introduced NA positions in the original data and filled data to calculate
+the classification error. 
+This way, although not as good as the first two ways, may catch how the variable factors affects the
+classification error and running time. 
 
 ## 2. Model bulding and predictions
 Generate a list of data with different missing ratio from 0.05 to 0.5
