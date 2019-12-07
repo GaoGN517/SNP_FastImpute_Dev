@@ -19,6 +19,7 @@ library(SNPFastImpute)
 library(tidyverse)
 library(ggplot2)
 library(ggpubr)
+library(microbenchmark)
 ```
 
 ## 1. Data preparation.

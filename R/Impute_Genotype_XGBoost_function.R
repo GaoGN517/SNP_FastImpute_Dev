@@ -129,7 +129,7 @@ Impute_GenoType_XGBoost_para <- function(df, size = 10, num_class = 3, nrounds =
   cl <- parallel::makeCluster(nworkers)
   doParallel::registerDoParallel(cl)
   
-  SNP_obj <- foreach::foreach (i = 1:NA_len, .packages="foreach") %dopar% {
+  SNP_obj <- foreach::foreach (i = 1:NA_len, .packages="foreach") %dorng% {
     col <- NA_cols[i]
     
     single_SNP_Obj <- SNPFastImpute::Create_Single_SNP_Object(df = df, a = col, size = size)
