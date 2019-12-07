@@ -113,7 +113,7 @@ names(SNP_NA_dfs) <- paste("missing", as.character(ratios))
 ```
 
 Now we calculate the classification errors and calculation time of different missing ratios
-```{r predict for different missing ratio, cache=T}
+```{r predict for different missing ratio, cache=F}
 df_fills <- list()
 proctimes <- rep(NA, ratios_len)
 for(i in 1:ratios_len) {
@@ -152,7 +152,7 @@ sizes_len <- length(sizes)
 SNP_NA_df02 <- SNP_NA_dfs[[4]]$SNP_NA_df
 ```
 
-```{r predict for different windows size, cache=T}
+```{r predict for different windows size, cache=F}
 df_fills <- list()
 proctimes <- rep(NA, ratios_len)
 for(i in 1:sizes_len) {
