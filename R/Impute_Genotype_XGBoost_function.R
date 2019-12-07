@@ -91,7 +91,7 @@ Impute_GenoType_XGBoost <- function(df, size = 10, num_class = 3, nrounds = 100)
 #'
 #' @examples
 #' data("Test_df")
-#' predict_df <- Impute_GenoType_XGBoost(Test_df, size = 10)
+#' predict_df <- Impute_GenoType_XGBoost_para(Test_df, size = 10)
 #' ## May take several seconds to finish.
 #' ## Should return a dataset where the missing values are filled by predicted values.  
 #' 
@@ -125,7 +125,7 @@ Impute_GenoType_XGBoost_para <- function(df, size = 10, num_class = 3, nrounds =
   
   NA_len <- length(NA_cols)
   
-  nworkers <- doParallel::detectCores()
+  nworkers <- parallel::detectCores()
   cl <- parallel::makeCluster(nworkers)
   doParallel::registerDoParallel(cl)
   
