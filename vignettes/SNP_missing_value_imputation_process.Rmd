@@ -105,6 +105,7 @@ Generate a list of data with different missing ratio from 0.05 to 0.5
 ratios <- seq(0.05, 0.25, by = 0.05)
 SNP_NA_dfs <- list()
 ratios_len <- length(ratios)
+#set.seed(20980)
 for (i in 1:ratios_len){
   SNP_NA_dfs[[i]] <- NA_Generator(SNP_orig_sub, ratios[i])
   print(SNP_NA_dfs[[i]]$NA_percent_generate)
@@ -113,19 +114,13 @@ names(SNP_NA_dfs) <- paste("missing", as.character(ratios))
 ```
 
 Now we calculate the classification errors and calculation time of different missing ratios
-```{r predict for different missing ratio, cache=T}
+```{r predict for different missing ratio, cache=F}
 df_fills <- list()
 time_missingRatio <- list()
 for(i in 1:ratios_len) {
-  #print(paste("ratio:", ratios[i]))
-  ##start <- proc.time()
-  ##print(start)
   timeprocess <- system.time(
       df_fills[[i]] <- Impute_GenoType_XGBoost(SNP_NA_dfs[[i]]$SNP_NA_df)
   )
-  #end <- proc.time()
-  #print(end)
-  #print(timeprocess)
   time_missingRatio[i] <- timeprocess[3]
 }
 ```
@@ -143,9 +138,13 @@ times_df <- as.data.frame(cbind(ratios, time_missingRatio))
 ```
 
 ```{r plot missing ratio vs error rate and time, echo = T, eval = T, fig.height = 4.5, message = F, tidy = T, tidy.opts=list(width.cutoff=35)}
-ggplot(errors_df, aes(x = ratios, y = errors)) + geom_point(size = 3) 
+plot(errors_df$ratios, errors_df$errors)
+plot(times_df$ratios, times_df$time_missingRatio)
+```
+The result shows that as missing ratio increases, the classification error rate increases, and the processing time also increases. 
 
-ggplot(times_df, aes(x = ratios, y = time_missingRatio)) + geom_point(size = 3)
+```{r, include=F}
+#ggplot(times_df, aes(x = ratios, y = time_missingRatio)) + geom_point(size = 3)
 ```
 
 
