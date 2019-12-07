@@ -17,7 +17,10 @@ devtools::install_github("GaoGN517/689_SNP_FastImpute")
 I am using a windows to develop this package and I used another windows system to test the installation. 
 I realized very late that this package may met some specific problem when installing on mac.  
 If using a mac OS system, you may met the error: "clang: error: unsupported option 'fopenmp'".
-This problem can be solved by "brew install llvm libomp" or "brew install libomp".
+This problem can be solved by "brew install llvm libomp" or "brew install libomp". 
+This installation may take very long time. I am sorry for the inconvenience. I am still looking
+for the best way to solve this problem. 
+
 
 ## Basic Example
 
