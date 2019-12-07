@@ -5,7 +5,9 @@
 #' @param df the dataframe containing NAs, p columns of SNPs, n rows of samples.
 #' @param a the column indicator of the SNP in the dataset.
 #' @param size the windows size around the SNP to use as predictor variables. 
-#' 
+#' @param corr.matrix A matrix storing the correlation of all SNPs in the dataframe. 
+#' Defualt is NULL, which is to just use the SNPs around the target SNP to build model. 
+#' When given this matrix, we pick the top n = size highest correlated columns to build model.
 #' 
 #' @details Basically the function do two different jobs. 
 #' Using the known values for each SNP to predict the missing values for that 
@@ -23,7 +25,7 @@
 #' 5. train_lable: the values of the non-missing samples for this SNP
 #' 6. pred_data: samples that are missing for this SNP.
 #' 7. pred_label: an empty vector to store the future predicted labels. 
-#' 
+#' 8. windows_range: the range of surrounding SNPs used for model building.
 #' 
 #' @export
 #'
@@ -40,20 +42,49 @@
 #' ## Should print a warning message that all samples for this SNP are NA's.
 #' ## return a list containing a model_fit value equal to false. 
 #' 
+#' corr <- cor(Test_df, method = "spearman", use = "pairwise.complete.obs")
+#' Create_Single_SNP_Object(Test_df, 3, 20, cor.matrix = corr)
+#' Create_Single_SNP_Object(Test_df, 3, 20)
 #' 
-Create_Single_SNP_Object <- function(df, a, size) {
+Create_Single_SNP_Object <- function(df, a, size, cor.matrix = NULL) {
   ## Store the dimension of df
   n <- nrow(df)
   p <- ncol(df)
   ## check whether there are enough 
-  if (size > p) stop("The size of the windows should be smaller than the number of SNPs.")
+  if ((size + 1) > p) stop("The size of the windows should be smaller than the number of SNPs besides the one to predict.")
   
-  ## Based on the size, decide the range of the predictor variables. 
-  if (a == 1)  range = c((a+1): size)
-  else if (a == p)  range = c((a-size): p)
-  else if (a <= size/2) range = c(1:(a-1), (a+1): size)
-  else if ((a + size/2) >= p)  range = c((a-(size - (p-a))):(a-1), (a+1): p)
-  else range = c((a-size/2):(a-1), (a+1): (a + size/2))
+  if (!is.null(cor.matrix)) {
+    corr.a <- corr.matrix[a, -1]
+    corr.len <- sum(!is.na(corr.a))
+    if(corr.len >= size) {
+      range <- order(corr.matrix[a, ])[2:(size+1)]
+      range.part2.size <- 0
+    }
+    else {
+      range.part1 <- which(!is.na(corr.a))
+      range.part2.size <- size - corr.len
+    }
+  }
+  else {
+    range.part1 <- vector()
+    range.part2.size <- size
+  }
+  if (range.part2.size != 0) {
+    position_vec <- seq(1, p, by = 1)
+    if (length(range.part1)==0) rest.positions <- position_vec
+    else rest.positions <- position_vec[-range.part1]
+    a.position.in.rest <- rest.positions[rest.positions == a]
+    rest.len <- length(rest.positions)
+    ## Based on the size, decide the range of the predictor variables.
+    if (a.position.in.rest == 1)  range.part2.pos <- c((a.position.in.rest+1): range.part2.size)
+    else if (a.position.in.rest == rest.len)  range.part2.pos <- c((a.position.in.rest-range.part2.size): rest.len)
+    else if (a.position.in.rest <= range.part2.size/2) range.part2.pos <- c(1:(a.position.in.rest-1), (a.position.in.rest+1): range.part2.size)
+    else if ((a.position.in.rest + range.part2.size/2) >= rest.len)  range.part2.pos <- c((a.position.in.rest-(range.part2.size - (rest.len-a.position.in.rest))):(a.position.in.rest-1), (a.position.in.rest+1): rest.len)
+    else range.part2.pos <- c((a.position.in.rest-range.part2.size/2):(a.position.in.rest-1), (a.position.in.rest+1): (a.position.in.rest + range.part2.size/2))
+    range.part2 <- rest.positions[range.part2.pos]
+    range <- unique(append(range.part1, range.part2))
+  }
+  
   
   ## For this SNP, get which samples has missing value, which does not. 
   NA_sample <- which(is.na(df[, a]))
@@ -82,7 +113,8 @@ Create_Single_SNP_Object <- function(df, a, size) {
                 train_data = train_data, 
                 train_label = train_label,
                 pred_data = pred_data, 
-                pred_label = pred_label))
+                pred_label = pred_label, 
+                windows_range = range))
   }
 }
 
