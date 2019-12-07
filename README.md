@@ -76,7 +76,9 @@ system.time(
 system.time(
   df_fill02 <- Impute_GenoType_XGBoost(SNP_NA_df02$SNP_NA_df)
 )
-
+##   user  system elapsed 
+## 11.455   0.265  12.257 
+ 
 system.time(
   df_fill005 <- Impute_GenoType_XGBoost(SNP_NA_df005$SNP_NA_df)
 )
