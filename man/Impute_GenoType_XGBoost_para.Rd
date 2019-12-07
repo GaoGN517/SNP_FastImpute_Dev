@@ -4,20 +4,30 @@
 \alias{Impute_GenoType_XGBoost_para}
 \title{Impute missing SNPs for the input dataset with parallel features.}
 \usage{
-Impute_GenoType_XGBoost_para(df, size = 10, num_class = 3, nrounds = 100)
+Impute_GenoType_XGBoost_para(
+  df,
+  size = 10,
+  num_class = 3,
+  nrounds = 100,
+  select.corr = FALSE
+)
 }
 \arguments{
 \item{df}{The original dataset including the missing SNPs to be imputed.}
 
 \item{size}{The windows size to use as the training dataset for each SNP, default: 10.}
 
-\item{num_class}{Number of classes of response variable (types of SNPs), default: 3.
+\item{num_class}{Number of classes of response variable (types of SNPs), default: 3.}
+
+\item{nrounds}{Number of fitting rounds, default: 100.}
+
+\item{select.corr}{Default is FALSE. When TRUE, we select the training SNPs based on the correlation matrix
+of each target SNP. We select the columns has the smallest correlations. If the required windows size is larger
+than the number of SNPs with non-NA correlations, then we use nearby columns to fit the descripancy. 
 
 params A list of parameters for the xgboost model building. 
 Default: nrounds = 100, booster = "gbtree", objective = "multi:softprob", 
 num_class = 3, eval_metric = "mlogloss".}
-
-\item{nrounds}{Number of fitting rounds, default: 100.}
 }
 \value{
 The predicted missing genotypes.
@@ -32,7 +42,8 @@ and use the non-missing samples for this SNP position as the training dataset.
 }
 \examples{
 data("Test_df")
-predict_df <- Impute_GenoType_XGBoost(Test_df, size = 10)
+predict_df_para <- Impute_GenoType_XGBoost_para(Test_df, size = 10)
+predict_df_corr_para <- Impute_GenoType_XGBoost_para(Test_df, size = 10, select.corr = TRUE)
 ## May take several seconds to finish.
 ## Should return a dataset where the missing values are filled by predicted values.  
 

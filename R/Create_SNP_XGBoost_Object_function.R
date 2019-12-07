@@ -5,7 +5,7 @@
 #' @param df the dataframe containing NAs, p columns of SNPs, n rows of samples.
 #' @param a the column indicator of the SNP in the dataset.
 #' @param size the windows size around the SNP to use as predictor variables. 
-#' @param corr.matrix A matrix storing the correlation of all SNPs in the dataframe. 
+#' @param cor.matrix A matrix storing the correlation of all SNPs in the dataframe. 
 #' Defualt is NULL, which is to just use the SNPs around the target SNP to build model. 
 #' When given this matrix, we pick the top n = size highest correlated columns to build model.
 #' 
@@ -54,10 +54,10 @@ Create_Single_SNP_Object <- function(df, a, size, cor.matrix = NULL) {
   if ((size + 1) > p) stop("The size of the windows should be smaller than the number of SNPs besides the one to predict.")
   
   if (!is.null(cor.matrix)) {
-    corr.a <- corr.matrix[a, -1]
+    corr.a <- cor.matrix[a, -1]
     corr.len <- sum(!is.na(corr.a))
     if(corr.len >= size) {
-      range <- order(corr.matrix[a, ])[2:(size+1)]
+      range <- order(cor.matrix[a, ])[2:(size+1)]
       range.part2.size <- 0
     }
     else {

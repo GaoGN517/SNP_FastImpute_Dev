@@ -4,7 +4,7 @@
 \alias{Create_Single_SNP_Object}
 \title{For a single SNP, create an SNPFastImpute Object}
 \usage{
-Create_Single_SNP_Object(df, a, size)
+Create_Single_SNP_Object(df, a, size, cor.matrix = NULL)
 }
 \arguments{
 \item{df}{the dataframe containing NAs, p columns of SNPs, n rows of samples.}
@@ -12,6 +12,10 @@ Create_Single_SNP_Object(df, a, size)
 \item{a}{the column indicator of the SNP in the dataset.}
 
 \item{size}{the windows size around the SNP to use as predictor variables.}
+
+\item{cor.matrix}{A matrix storing the correlation of all SNPs in the dataframe. 
+Defualt is NULL, which is to just use the SNPs around the target SNP to build model. 
+When given this matrix, we pick the top n = size highest correlated columns to build model.}
 }
 \value{
 an object for the corresponding SNP.
@@ -24,7 +28,8 @@ If the SNP has missing value, then this object is a list with 6 elements:
 4. train_data: samples that are not missing for this SNP. 
 5. train_lable: the values of the non-missing samples for this SNP
 6. pred_data: samples that are missing for this SNP.
-7. pred_label: an empty vector to store the future predicted labels.
+7. pred_label: an empty vector to store the future predicted labels. 
+8. windows_range: the range of surrounding SNPs used for model building.
 }
 \description{
 For a single SNP, create an SNPFastImpute Object
@@ -47,5 +52,8 @@ Create_Single_SNP_Object(matrix(NA, 10, 5), 1, 1)
 ## Should print a warning message that all samples for this SNP are NA's.
 ## return a list containing a model_fit value equal to false. 
 
+corr <- cor(Test_df, method = "spearman", use = "pairwise.complete.obs")
+Create_Single_SNP_Object(Test_df, 3, 20, cor.matrix = corr)
+Create_Single_SNP_Object(Test_df, 3, 20)
 
 }
