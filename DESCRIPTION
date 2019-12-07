@@ -9,7 +9,7 @@ Author:
                family = "Gao",
                role = c("aut", "cre"),
                email = "gaog@stat.tamu.edu")
-Maintainer: Who to complain to <yourfault@somewhere.net>
+Maintainer: <gaog@stat.tamu.edu>
 Description: The package performs single nucleotide polymorphism (SNP) 
         missing value imputation for their next generation gene 
         sequencing data without a reference genome. The tool should 
