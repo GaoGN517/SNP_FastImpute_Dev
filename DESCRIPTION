@@ -1,7 +1,7 @@
 Package: SNPFastImpute
 Type: Package
-Title: SNPFastImpute: Perform fast missing value imputation for
-        single nucleotide polymorphism data. 
+Title: SNPFastImpute: Perform fast missing value imputation for single
+        nucleotide polymorphism data.
 Version: 1.0.0.9000
 Date: 2019-11-25
 Authors@R: 
@@ -16,14 +16,10 @@ Description: The package performs single nucleotide polymorphism (SNP)
         be able to predict the missing SNP value based on a certain 
         number of SNPs around the missing point. 
 License: GPL-2
-Imports: xgboost,
-         dplyr,
-         foreach,
-         doParallel,
-         doRNG
+Imports: xgboost, dplyr, foreach, doParallel, doRNG
 RoxygenNote: 7.0.2
-Suggests: 
-    testthat (>= 2.1.0),
-    knitr,
-    rmarkdown
+Suggests: testthat (>= 2.1.0), knitr, rmarkdown
 VignetteBuilder: knitr
+NeedsCompilation: no
+Packaged: 2019-12-08 05:11:41 UTC; yeqinglu
+Author: Guannan Gao [aut, cre]
