@@ -136,7 +136,7 @@ Create_Single_SNP_Object <- function(df, a, size, cor.matrix = NULL) {
 #' 
 #' 2. Multiple_SNP_Object: corresponding SNP_Objects for these SNPs
 #' 
-#' @export
+#' 
 #'
 #' @examples
 #' 
@@ -144,7 +144,7 @@ Create_Single_SNP_Object <- function(df, a, size, cor.matrix = NULL) {
 #' data("Test_df")
 #' xgboost_snp_obj <- Create_SNP_XGBoost_Object(df)
 #' 
-#' xgboost_snp_obj <- Create_SNP_XGBoost_Object(df, size = 200)
+#' 
 #' 
 #' 
 #' 

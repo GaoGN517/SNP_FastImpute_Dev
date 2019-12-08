@@ -64,6 +64,7 @@ After processing, raw data would be looking like the following matrix (only show
 ```{r showdf, echo=F}
 full_df[1:4, 1:4]
 sub <- 100
+set.seed(765432)
 ```
 There are `r dim(full_df)[1]` samples and `r dim(full_df)[2]` SNPs in the original dataset. 
 And the missing ratio is `r sum(is.na(full_df))/length(full_df)`.  
