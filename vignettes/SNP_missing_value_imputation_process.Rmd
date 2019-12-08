@@ -185,7 +185,7 @@ ggarrange(p1, p2, nrow = 1)
 ```
 
 ### 2.3. Check whether considering the correlation between SNPs can increase or decrease accuracy.
-```{r predict for different missing ratio before and after considering correlation, cache=T, warning=F}
+```{r predict for different missing ratio before and after considering correlation, cache=F, warning=F}
 df_fills <- df_fills_corr <- list()
 proctimes <- rep(NA, ratios_len)
 for(i in 1:ratios_len) {
