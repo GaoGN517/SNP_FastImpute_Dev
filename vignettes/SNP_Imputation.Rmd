@@ -19,12 +19,13 @@ library(SNPFastImpute)
 library(tidyverse)
 library(ggplot2)
 library(ggpubr)
+library(microbenchmark)
 library(nlme)
 ```
 
 ## 1. Data preparation.
 ### 1.1. From vcf (Variant Call Format) to matrix.
-#### Load the vcf dataset.   
+Load the vcf dataset.   
 Some vcf file might contain some heading information. If that is the case, just read (using the
 read.table function) starting from the first row below those headings. (More information about the 
 vcf format check https://en.wikipedia.org/wiki/Variant_Call_Format.) 
@@ -36,10 +37,7 @@ full_vcf[1:5, c(1:7, 9:14)]
 ```
 The original vcf file contains 52 rows (starting from column 10 are samples) and 19999 SNP positions. 
 
-#### Data Explanation
 Information we need are in column 3 (label of SNPs) and columns starting from 19 (each sample).  
-
-Each row is for an SNP, and columns contain sample information in the origianl data.  
 
 And only the first part of the sample columns before the first ":" are useful in our analyses. 
 The two integers separated by "/" are the indicator of genotype of two alleles of genes at the same
@@ -57,47 +55,45 @@ We store these information into a numeric matrix, whose rows are the samples whi
 ```{r vcf2df, message=FALSE}
 full_df <- vcf2df(full_vcf)
 ```
-There would be a warning message for NAs, which is caused by adding missing positions of SNPs, 
-which is what we should do. So here NAs does not mean problem. They are what we are going to impute in our package. 
 
-After processing, raw data would be looking like the following matrix (only showing the first 4 columns and 4 rows):
 ```{r showdf, echo=F}
 full_df[1:4, 1:4]
 sub <- 100
+<<<<<<< HEAD
 set.seed(765432)
+=======
+set.seed(123456)
+>>>>>>> parent of 6934f03... ## Update documentation of vignette.
 ```
+There would be a warning message for NAs, which is caused by adding missing positions of SNPs, 
+which is what we should do. So here NAs does not mean problem.   
 There are `r dim(full_df)[1]` samples and `r dim(full_df)[2]` SNPs in the original dataset. 
 And the missing ratio is `r sum(is.na(full_df))/length(full_df)`.  
 
-The full data matrix is too large, we will only use a subset (first `r sub` SNPs) of it here to show a short example of how our package deal with the missing values in the matrix.
+This data matrix is too large, we will only use a subset (first `r sub` SNPs) of it.
 ```{r subset}
 SNP_orig_sub <- full_df[, 1:sub]
 ```
 Original NA ratio is `r sum(is.na(SNP_orig_sub))/length(SNP_orig_sub)`.
 
 ### 1.2 Introduction of additional NAs.  
-There are variations in our prediction, for example:  
-
-*  **precentage of NAs** in the matrix. This is decided by the sequencing result, and not controlable. But we will test how it affects the results.  
-
-*  **windows** of the surrounding SNPs we used for model building   
-
-    + We can directly control the windows size   
-    
-    + We can also decide who to include in the windows. e.g., we can only include highly correlated SNPs.  
-    
-*  **training rounds** of model. The more training rounds, the better results. But we also need to note the increasing  training time. So we also need to find the balance.
+There are several variations in our prediction:  
+* (1) precentage of NAs in the matrix  
+* (2) windows size of the surrounding SNPs we used for model building  
+* (3) training rounds of model.  
 
 We want to know how these affects the following properties:    
-*  classification error: ratio that are not correctly classified.   
+* (1) classification error: ratio that are not correctly classified.  
+* (2) running time: e.g., if enlarging the window size only slightly decreases the classification
+error but cost unreasonably long time, then we might not choose that size.   
 
-*  running time: e.g., if enlarging the window size only slightly decreases the classification error but cost unreasonably long time, then we might not choose that size.   
-
-To calculate true classfication error, the best way is to find an SNP matrix which contains no missing SNPs 
+To calculate these error, the best way is to find an SNP matrix which contains no missing SNPs 
 (which I could not find, all my current SNP files contains a lot of missings). 
 
 The second best way is to simulate an SNP matrix which contains no missing value. 
-This is not an easy task because we need to make sure the correlations between the SNPs and the appearances of wildetype alleles are representing the real-life situation. 
+This is not an easy task because we need to make sure the correlations between the SNPs are
+representing the true situation. 
+And the appearances of wildetype alleles are representing the true situation. 
 I am planning to do this in the next step, but currently I do not have a very good way to simulate. 
 
 So what I am doing now is that I introduced some new missing values into the original matrix so that
@@ -110,14 +106,12 @@ classification error and running time.
 
 ## 2. Model bulding and predictions
 ## 2.1. Check how different missing ratios affect the prediction accuracy and processing time. 
-Generate a list of data with different missing ratio from 0.05 to 0.25. The introduced ratio of NAs are shown bellow.
+Generate a list of data with different missing ratio from 0.05 to 0.25
 ```{r introduceNA}
-## Create ratio sequence
 ratios <- seq(0.05, 0.25, by = 0.05)
-## Create list and vector to store the introduced NA data
 SNP_NA_dfs <- list()
 ratios_len <- length(ratios)
-## Introduce NAs to reach the corresponding ratio
+#set.seed(20980)
 for (i in 1:ratios_len){
   SNP_NA_dfs[[i]] <- NA_Generator(SNP_orig_sub, ratios[i])
   print(SNP_NA_dfs[[i]]$NA_percent_generate)
@@ -125,13 +119,10 @@ for (i in 1:ratios_len){
 names(SNP_NA_dfs) <- paste("missing", as.character(ratios))
 ```
 
-Now we calculate the classification errors and calculation time of different missing ratios.
+Now we calculate the classification errors and calculation time of different missing ratios
 ```{r predict for different missing ratio, cache=F}
-## Create an empty list to store the filled data
 df_fills <- list()
-## Create an empty vectore to store the processing times.
 proctimes <- rep(NA, ratios_len)
-## Fill each data matrix using the parallel version of function. 
 for(i in 1:ratios_len) {
   timeprocess <- system.time(
       df_fills[[i]] <- Impute_GenoType_XGBoost_para(SNP_NA_dfs[[i]]$SNP_NA_df)
@@ -140,7 +131,6 @@ for(i in 1:ratios_len) {
 }
 ```
 
-Next we calcualte the classfication error for each ratio.
 ```{r classification error calculation for different missing rate}
 errors <- rep(NA, ratios_len)
 for(i in 1:ratios_len){
@@ -148,7 +138,6 @@ for(i in 1:ratios_len){
 }
 ```
 
-Plot the results. 
 ```{r calculate missing ratio vs error rate and time, message=FALSE, echo = F}
 errors_df <- data.frame(ratios, errors)
 times_df <- data.frame(ratios, proctimes)
@@ -156,21 +145,20 @@ times_df <- data.frame(ratios, proctimes)
 
 ```{r plot missing ratio vs error rate and time, echo = F, eval = T, fig.width=7, message = F, tidy = T, tidy.opts=list(width.cutoff=35)}
 p1 <- ggplot(errors_df, aes(x = ratios, y = errors)) + geom_point() + ylim(c(0, 0.2))
-p2 <- ggplot(times_df, aes(x = ratios, y = proctimes)) + geom_point() + ylim(c(0, 0.5)) + ylab("process time")
+p2 <- ggplot(times_df, aes(x = ratios, y = proctimes)) + geom_point() + ylim(c(0, 2))
 ggarrange(p1, p2, nrow = 1)
 ```
 
-The result shows that for the current subset of data, the increasing of missing ratio from 0.05 to 0.25 did not affect the training error and processing time a lot. 
+The result shows that as missing ratio increases, the classification error rate is controled under 10%, but the processing time monotonely increases. 
 
 ### 2.2. Check how different windows sizes affect the prediction accuracy and processing time. 
-We use the 20% missing data to perform tests. We choose 5 different windows sizes: 10, 20, 30, 40, 50.
+We use the 20% missing data to perform tests.
 ```{r windows size list}
 sizes <- seq(10, 50, by = 10)
 sizes_len <- length(sizes)
 SNP_NA_df02 <- SNP_NA_dfs[[4]]$SNP_NA_df
 ```
 
-Next, we used the imputation function to impute with different windows sizes.
 ```{r predict for different windows size, cache=F}
 df_fills <- list()
 proctimes <- rep(NA, ratios_len)
@@ -182,7 +170,6 @@ for(i in 1:sizes_len) {
 }
 ```
 
-Then we calculate the classification errors. 
 ```{r classification error calculation for different windows size}
 errors <- rep(NA, ratios_len)
 for(i in 1:ratios_len){
@@ -190,7 +177,6 @@ for(i in 1:ratios_len){
 }
 ```
 
-Plot the results
 ```{r calculate windows size vs error rate and time, message=FALSE, echo = F}
 errors_df <- data.frame(sizes, errors)
 times_df <- data.frame(sizes, proctimes)
@@ -198,15 +184,11 @@ times_df <- data.frame(sizes, proctimes)
 
 ```{r plot windows size vs error rate and time, echo = F, eval = T, fig.width=7, message = F, tidy = T, tidy.opts=list(width.cutoff=35)}
 p1 <- ggplot(errors_df, aes(x = sizes, y = errors)) + geom_point() + ylim(c(0, 0.2))
-p2 <- ggplot(times_df, aes(x = sizes, y = proctimes)) + geom_point() + ylim(c(0, 0.5)) + ylab("process time") 
+p2 <- ggplot(times_df, aes(x = sizes, y = proctimes)) + geom_point() + ylim(c(0, 2))
 ggarrange(p1, p2, nrow = 1)
 ```
 
-From these plots, it seems that windows size = 40 is not a good choice for this impuation.
-
-
 ### 2.3. Check whether considering the correlation between SNPs can increase or decrease accuracy.
-We used the windows does not consider SNP correlations and the windows selected considering SNP correlations. All other parameters are set as default values. We again compare 5 different ratios as in part 2.1.
 ```{r predict for different missing ratio before and after considering correlation, cache=F, warning=F}
 df_fills <- df_fills_corr <- list()
 proctimes <- rep(NA, ratios_len)
@@ -219,7 +201,6 @@ for(i in 1:ratios_len) {
 }
 ```
 
-Calculate errors
 ```{r classification error calculation for different missing rate before and after considering correlation}
 errors <- error_corr <- rep(NA, ratios_len)
 for(i in 1:ratios_len){
@@ -228,20 +209,15 @@ for(i in 1:ratios_len){
 }
 ```
 
-Plot the results
 ```{r calculate missing ratio vs error rate after considering correlation, message=FALSE, echo=F}
 errors_df <- data.frame(ratios, errors)
 error_corr_df <- data.frame(ratios, error_corr)
 ```
 
 ```{r plot missing ratio vs error rate after considering correlation, echo = F, eval = T, fig.width=7, message = F, tidy = T, tidy.opts=list(width.cutoff=35)}
-p1 <- ggplot(errors_df, aes(x = ratios, y = errors)) + geom_point() + ylim(c(0, 1)) + ylab("error with windows not consider correlation")
-p2 <- ggplot(error_corr_df, aes(x = ratios, y = error_corr)) + geom_point() + ylim(c(0, 1)) + ylab("error with windows consider correlation")
+p1 <- ggplot(errors_df, aes(x = ratios, y = errors)) + geom_point() + ylim(c(0, 0.2))
+p2 <- ggplot(error_corr_df, aes(x = ratios, y = error_corr)) + geom_point() + ylim(c(0, 2))
 ggarrange(p1, p2, nrow = 1)
 ```
 
-The result shows that for our current data, considering the correlation when selecting windows size did not reduce error rate or increase accuracy. 
-
-### Conclusion
-All these conclusions can provide very helpful information about our target dataset and help use to decide the parameter settings when we want to impute for real missing values.
-
+The result shows that considering the correlation when selecting windows size helped to reduce error rate and increase accuracy. 
