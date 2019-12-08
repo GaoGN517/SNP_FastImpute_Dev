@@ -20,7 +20,7 @@ knitr::opts_chunk$set(echo = TRUE,tidy='formatR', tidy.opts=list(width.cutoff = 
 
 The goal of SNPFastImpute is to impute missing values in SNP data files. 
 
-## Installation
+## 1. Installation
 
 You can install the development version of SNPFastImpute from github using devtools:
 
@@ -34,14 +34,14 @@ I realized very late that this package may met some specific problem when instal
 As I currently not using C++ features, I decided to remove C related parts to make the package more easy to run. 
 
 
-## Basic Usage
+## 2. Basic Usage
 
 Load the package:
 ```{r attatch, results='hide'}
 library(SNPFastImpute)
 ```
 
-### Read a vcf file as a matrix
+### 2.1. Read a vcf file as a matrix
 filename <- "data/Test.vcf" - your file path
 vcf_df <- read.table(filename) - read in your vcf data 
 Here we just load the dataset in vcf format.
@@ -52,7 +52,7 @@ output_df <- vcf2df(vcf_df)
 ```
 There would be warning message for NAs, which is caused by adding missing positions of SNPs, which is what we should do. So here NAs do not mean problem.
 
-### Introduce some missing values into the original matrix to test the performance
+### 2.2. Introduce some missing values into the original matrix to test the performance
 ```{r}
 data("SNP_orig_sub")
 ```
@@ -75,13 +75,13 @@ SNP_NA_df005 <- NA_Generator(SNP_orig_sub, 0.05)
 
 Now we have the original matrix, the two objects with additional missing values.
 We can use the following function to create an object that can be used in the imputation function for each SNP in the matrix.
-### Create SNP_Object
+### 2.3. Create SNP_Object
 This object contains all the information we need for the imputation of the target single SNP column with missing values. 
 ```{r}
 Create_Single_SNP_Object(SNP_NA_df005$SNP_NA_df, 2, size = 20)
 ```
 
-### SNP missing value imputation:
+### 2.4. SNP missing value imputation:
 We can just do the filling for the original matrix
 ```{r}
 predict_df <- Impute_GenoType_XGBoost(SNP_orig_sub, size = 10)
@@ -93,7 +93,7 @@ If imputation time is long for large files, this is also an paralleled version o
 predict_df_para <- Impute_GenoType_XGBoost_para(SNP_orig_sub, size = 10)
 ```
 
-### Calculation of classification error
+### 2.5. Calculation of classification error
 We can perform the filling on the matrix which we introduced additional missing values. And then see how our method performed on predictions. 
 ```{r}
 ## Imputation
