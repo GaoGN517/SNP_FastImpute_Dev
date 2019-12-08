@@ -1,23 +1,94 @@
+SNPFastImpute Package
+================
+Guannan Gao
+
+  - [SNPFastImpute](#snpfastimpute)
+      - [Installation](#installation)
+      - [Basic Example](#basic-example)
 
 # SNPFastImpute
 
 <!-- badges: start -->
+
 <!-- badges: end -->
 
-The goal of SNPFastImpute is to impute missing values in SNP data files. 
+The goal of SNPFastImpute is to impute missing values in SNP data files.
 
 ## Installation
 
-You can install the development version of SNPFastImpute from github using devtools:
+You can install the development version of SNPFastImpute from github
+using devtools:
 
 ``` r
 devtools::install_github("GaoGN517/689_SNP_FastImpute")
 ```
 
-I am using a windows to develop this package and I used another windows system to test the installation. 
-I realized very late that this package may met some specific problem when installing on mac.  
-As I currently not using C++ features, I decided to remove C related parts to make the package more easy to run. 
+    ## Downloading GitHub repo GaoGN517/689_SNP_FastImpute@master
 
+    ## 
+    ##   
+       checking for file ‘/private/var/folders/vq/ffxn7ctj7j19fhtjfb26rwj00000gn/T/RtmpCvc8NT/remotesffa12447751e/GaoGN517-689_SNP_FastImpute-1ade028/DESCRIPTION’ ...
+      
+    ✔  checking for file ‘/private/var/folders/vq/ffxn7ctj7j19fhtjfb26rwj00000gn/T/RtmpCvc8NT/remotesffa12447751e/GaoGN517-689_SNP_FastImpute-1ade028/DESCRIPTION’
+    ## 
+      
+    ─  preparing ‘SNPFastImpute’:
+    ## 
+      
+       checking DESCRIPTION meta-information ...
+      
+    ✔  checking DESCRIPTION meta-information
+    ## 
+      
+    ─  installing the package to process help pages
+    ## 
+      
+    ─  saving partial Rd database (3.4s)
+    ## 
+      
+    ─  checking for LF line-endings in source and make files and shell scripts
+    ## 
+      
+    ─  checking for empty or unneeded directories
+    ## ─  looking to see if a ‘data/datalist’ file should be added
+    ## 
+      
+         NB: this package now depends on R (>= 3.5.0)
+    ## 
+      
+         WARNING: Added dependency on R >= 3.5.0 because serialized objects in  serialize/load version 3 cannot be read in older versions of R.  File(s) containing such objects:  'SNPFastImpute/vignettes/SNP_missing_value_imputation_process_cache/html/predict  WARNING: Added dependency on R >= 3.5.0 because serialized objects in  serialize/load version 3 cannot be read in older versions of R.  File(s) containing such objects: for different missing ratio before  and after considering  WARNING: Added dependency on R >= 3.5.0 because serialized objects in  serialize/load version 3 cannot be read in older versions of R.  File(s) containing such objects:  correlation_c73172829437dfac00fa71a5e27d4945.RData'  WARNING: Added dependency on R >= 3.5.0 because serialized objects in  serialize/load version 3 cannot be read in older versions of R.  File(s) containing such objects:  'SNPFastImpute/vignettes/SNP_missing_value_imputation_process_cache/html/predict  WARNING: Added dependency on R >= 3.5.0 because serialized objects in  serialize/load version 3 cannot be read in older versions of R.  File(s) containing such objects: for different missing ratio before  and after considering  WARNING: Added dependency on R >= 3.5.0 because serialized objects in  serialize/load version 3 cannot be read in older versions of R.  File(s) containing such objects:  correlation_c73172829437dfac00fa71a5e27d4945.rdx'
+    ## 
+      
+    ─  building 'SNPFastImpute_1.0.0.9000.tar.gz'
+    ## 
+      
+       Warning in utils::tar(filepath, pkgname, compression = compression, compression_level = 9L,  :
+    ##      storing paths of more than 100 bytes is not portable:
+    ##      'SNPFastImpute/vignettes/SNP_missing_value_imputation_process_cache/html/predict for different missing ratio before and after considering correlation_c73172829437dfac00fa71a5e27d4945.RData'
+    ## 
+      
+       Warning in utils::tar(filepath, pkgname, compression = compression, compression_level = 9L,  :
+    ##      storing paths of more than 100 bytes is not portable:
+    ##      'SNPFastImpute/vignettes/SNP_missing_value_imputation_process_cache/html/predict for different missing ratio before and after considering correlation_c73172829437dfac00fa71a5e27d4945.rdb'
+    ## 
+      
+       Warning in utils::tar(filepath, pkgname, compression = compression, compression_level = 9L,  :
+    ##      storing paths of more than 100 bytes is not portable:
+    ##      'SNPFastImpute/vignettes/SNP_missing_value_imputation_process_cache/html/predict for different missing ratio before and after considering correlation_c73172829437dfac00fa71a5e27d4945.rdx'
+    ## 
+      
+       Warning in utils::tar(filepath, pkgname, compression = compression, compression_level = 9L,  :
+    ##      using GNU extension for long pathname
+    ## 
+      
+       
+    ## 
+
+I am using a windows to develop this package and I used another windows
+system to test the installation. I realized very late that this package
+may met some specific problem when installing on mac.  
+As I currently not using C++ features, I decided to remove C related
+parts to make the package more easy to run.
 
 ## Basic Example
 
@@ -91,4 +162,3 @@ NA_positions005 <- SNP_NA_df005$NP_generate_positions
 classification_error(SNP_orig_sub, df_fill02, NA_positions02) ## 0.071
 classification_error(SNP_orig_sub, df_fill005, NA_positions005) ## 0.061
 ```
-
