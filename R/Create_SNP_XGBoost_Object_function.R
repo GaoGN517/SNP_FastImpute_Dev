@@ -144,7 +144,7 @@ Create_Single_SNP_Object <- function(df, a, size, cor.matrix = NULL) {
 #' data("Test_df")
 #' xgboost_snp_obj <- Create_SNP_XGBoost_Object(df)
 #' 
-#' xgboost_snp_obj <- Create_SNP_XGBoost_Object(df, size = 200)
+#' ## xgboost_snp_obj <- Create_SNP_XGBoost_Object(df, size = 200)
 #' 
 #' 
 #' 
