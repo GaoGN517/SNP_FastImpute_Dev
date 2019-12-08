@@ -31,7 +31,7 @@ returns an object for our imputation function.
 data("Test_df")
 xgboost_snp_obj <- Create_SNP_XGBoost_Object(df)
 
-xgboost_snp_obj <- Create_SNP_XGBoost_Object(df, size = 200)
+
 
 
 
