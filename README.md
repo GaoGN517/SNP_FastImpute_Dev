@@ -1,17 +1,3 @@
----
-title: "SNPFastImpute Package"
-author: "Guannan Gao"
-
-output: 
-  github_document:
-        toc: true
-        toc_depth: 4
-  
----
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE,tidy='formatR', tidy.opts=list(width.cutoff = 70))
-```
 
 # SNPFastImpute
 
