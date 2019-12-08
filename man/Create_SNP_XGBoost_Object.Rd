@@ -26,9 +26,9 @@ This function takes in a matrix (p columns of SNPs, n rows of samples) with NAs 
 returns an object for our imputation function.
 }
 \examples{
-df <- readRDS("Test_df.rds")
-## This is a short matrix containing 100 SNPs with 20 samples. 
 
+## This is a short matrix containing 100 SNPs with 20 samples. 
+data("Test_df")
 xgboost_snp_obj <- Create_SNP_XGBoost_Object(df)
 
 xgboost_snp_obj <- Create_SNP_XGBoost_Object(df, size = 200)
