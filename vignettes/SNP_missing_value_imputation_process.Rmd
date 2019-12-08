@@ -58,6 +58,7 @@ full_df <- vcf2df(full_vcf)
 ```{r showdf, echo=F}
 full_df[1:4, 1:4]
 sub <- 100
+set.seed(123456)
 ```
 There would be a warning message for NAs, which is caused by adding missing positions of SNPs, 
 which is what we should do. So here NAs does not mean problem.   
@@ -72,13 +73,13 @@ Original NA ratio is `r sum(is.na(SNP_orig_sub))/length(SNP_orig_sub)`.
 
 ### 1.2 Introduction of additional NAs.  
 There are several variations in our prediction:  
-- (1) precentage of NAs in the matrix  
-- (2) windows size of the surrounding SNPs we used for model building  
-- (3) training rounds of model.  
+* (1) precentage of NAs in the matrix  
+* (2) windows size of the surrounding SNPs we used for model building  
+* (3) training rounds of model.  
 
 We want to know how these affects the following properties:    
-- (1) classification error: ratio that are not correctly classified.  
-- (2) running time: e.g., if enlarging the window size only slightly decreases the classification
+* (1) classification error: ratio that are not correctly classified.  
+* (2) running time: e.g., if enlarging the window size only slightly decreases the classification
 error but cost unreasonably long time, then we might not choose that size.   
 
 To calculate these error, the best way is to find an SNP matrix which contains no missing SNPs 
@@ -100,7 +101,7 @@ classification error and running time.
 
 ## 2. Model bulding and predictions
 ## 2.1. Check how different missing ratios affect the prediction accuracy and processing time. 
-Generate a list of data with different missing ratio from 0.05 to 0.5
+Generate a list of data with different missing ratio from 0.05 to 0.25
 ```{r introduceNA}
 ratios <- seq(0.05, 0.25, by = 0.05)
 SNP_NA_dfs <- list()
