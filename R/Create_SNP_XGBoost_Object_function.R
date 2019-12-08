@@ -139,9 +139,9 @@ Create_Single_SNP_Object <- function(df, a, size, cor.matrix = NULL) {
 #' @export
 #'
 #' @examples
-#' df <- readRDS("Test_df.rds")
-#' ## This is a short matrix containing 100 SNPs with 20 samples. 
 #' 
+#' ## This is a short matrix containing 100 SNPs with 20 samples. 
+#' data("Test_df")
 #' xgboost_snp_obj <- Create_SNP_XGBoost_Object(df)
 #' 
 #' xgboost_snp_obj <- Create_SNP_XGBoost_Object(df, size = 200)

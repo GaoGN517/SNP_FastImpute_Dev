@@ -20,6 +20,7 @@ library(tidyverse)
 library(ggplot2)
 library(ggpubr)
 library(microbenchmark)
+library(nlme)
 ```
 
 ## 1. Data preparation.
