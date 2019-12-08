@@ -15,11 +15,6 @@ You can install the development version of SNPFastImpute from github using devto
 devtools::install_github("GaoGN517/689_SNP_FastImpute")
 ```
 
-I am using a windows to develop this package and I used another windows system to test the installation. 
-I realized very late that this package may met some specific problem when installing on mac.  
-As I currently not using C++ features, I decided to remove C related parts to make the package more easy to run. 
-
-
 ## 2. Basic Usage
 
 Load the package:
