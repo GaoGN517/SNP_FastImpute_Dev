@@ -23,8 +23,11 @@ library(SNPFastImpute)
 ```
 
 ### 2.1. Read a vcf file as a matrix
-filename <- "data/Test.vcf" - your file path
-vcf_df <- read.table(filename) - read in your vcf data 
+For example, if your data file name is "data/Test.vcf". Then the following codes can read in the vcf file.
+```
+filename <- "data/Test.vcf" # your file path
+vcf_df <- read.table(filename) # read in your vcf data 
+```
 Here we just load the dataset in vcf format.
 
 ```{r, echo=TRUE, results='hide', warning=FALSE}

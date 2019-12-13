@@ -16,7 +16,7 @@ Description: The package performs single nucleotide polymorphism (SNP)
         be able to predict the missing SNP value based on a certain 
         number of SNPs around the missing point. 
 License: GPL-2
-Imports: xgboost, dplyr, foreach, doParallel, doRNG
+Imports: xgboost, dplyr, foreach, doParallel, doRNG, ggpubr
 RoxygenNote: 7.0.2
 Suggests: testthat (>= 2.1.0), knitr, rmarkdown
 VignetteBuilder: knitr
