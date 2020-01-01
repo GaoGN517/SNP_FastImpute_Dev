@@ -12,7 +12,7 @@ You can install the development version of SNPFastImpute from github using devto
 
 
 ``` {r installation, include = F}
-devtools::install_github("GaoGN517/689_SNP_FastImpute")
+devtools::install_github("GaoGN517/SNP_FastImpute_Dev")
 ```
 
 ## 2. Basic Usage
